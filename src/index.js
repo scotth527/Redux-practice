@@ -2,12 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import thunk from 'redux-thunk';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { applyMiddleware, compose, combineReducers, createStore } from 'redux';
 import productsReducer from './reducers/productsReducer.js';
 import userReducer from './reducers/userReducer.js';
-
+import { createSelector } from 'reselect';
 
 const allReducers = combineReducers({
   products:productsReducer,
@@ -21,12 +22,18 @@ const updateUserAction = {
   }
 }
 
+//Thunk middleware needs to come first
+const allStoreEnhancers = compose(
+    applyMiddleware(thunk),
+    window.devToolsExtension && window.devToolsExtension()
+);
+
 //first paramater is the reducer
 //second parameter in createStore is the initial state
 const store = createStore(
   allReducers,
   { products:[{name: 'iPhone'}], user:'Michael'},
-  window.devToolsExtension && window.devToolsExtension()
+  allStoreEnhancers
 );
 
 
